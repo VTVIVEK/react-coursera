@@ -17,6 +17,7 @@ import {
   Label,
 } from "reactstrap";
 import { Control, LocalForm, Errors } from "react-redux-form";
+import { addComment } from '../redux/ActionCreators';
 
 function RenderDish({ dish }) {
   if (dish != null) {
@@ -34,7 +35,7 @@ function RenderDish({ dish }) {
   }
 }
 
-function RenderComments({ comments }) {
+function RenderComments({comments, addComment, dishId}) {
   if (comments != null) {
     return (
       <ul type="none">
@@ -53,7 +54,7 @@ function RenderComments({ comments }) {
             </li>
           );
         })}
-        <CommentForm />
+         <CommentForm dishId={dishId} addComment={addComment} />
       </ul>
     );
   } else {
@@ -82,7 +83,10 @@ const DishdetailComponent = (props) => {
             <RenderDish dish={props.dish} />
           </div>
           <div className="col-12 col-md-5 m-1">
-            <RenderComments comments={props.comments} />
+          <RenderComments comments={props.comments}
+        addComment={props.addComment}
+        dishId={props.dish.id}
+      />
           </div>
         </div>
       </div>
@@ -112,8 +116,7 @@ class CommentForm extends React.Component {
   }
 
   handleSubmit(values) {
-    console.log("Current State is: " + JSON.stringify(values));
-    alert("Current State is: " + JSON.stringify(values));
+    this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
   }
 
   render() {
@@ -151,11 +154,11 @@ class CommentForm extends React.Component {
                 />
               </div>
               <div className="form-group">
-                <Label htmlFor="name">Your Name</Label>
+                <Label htmlFor="author">Your Name</Label>
                 <Control.text
-                  model=".name"
-                  id="name"
-                  name="name"
+                  model=".author"
+                  id="author"
+                  name="author"
                   placeholder="Your Name"
                   className="form-control"
                   validators={{
@@ -166,7 +169,7 @@ class CommentForm extends React.Component {
                 />
                 <Errors
                   className="text-danger"
-                  model=".name"
+                  model=".author"
                   show="touched"
                   messages={{
                     required: "Required",
